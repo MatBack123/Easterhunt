@@ -18,6 +18,7 @@
         margin: 0 auto;
         border: 2px solid #333;
         background-color: #ddd;
+        touch-action: none;
       }
 
       .piece {
@@ -28,6 +29,7 @@
         background-size: 512px 340px;
         cursor: grab;
         border: 1px solid rgba(0, 0, 0, 0.2);
+        touch-action: none;
       }
 
       #qr {
@@ -52,15 +54,14 @@
 
     <div id="qr">
       <img
-        src="https://api.qrserver.com/v1/create-qr-code/?data=https://matback123.github.io/Easterhunt/&size=200x200"
+        src="https://api.qrserver.com/v1/create-qr-code/?data=https://jouwlinkhier.nl&size=200x200"
         alt="QR Code"
       />
       <p><strong>🎉 Goed gedaan! Scan de QR-code!</strong></p>
     </div>
 
     <script>
-      const rows = 2,
-        cols = 2;
+      const rows = 2, cols = 2;
       const pieceWidth = 512 / cols;
       const pieceHeight = 340 / rows;
 
@@ -75,46 +76,52 @@
             piece.dataset.correctRow = row;
             piece.dataset.correctCol = col;
 
-            piece.style.backgroundPosition = `-${col * pieceWidth}px -${
-              row * pieceHeight
-            }px`;
+            piece.style.backgroundPosition = `-${col * pieceWidth}px -${row * pieceHeight}px`;
 
             const randX = Math.random() * (board.clientWidth - pieceWidth);
             const randY = Math.random() * (board.clientHeight - pieceHeight);
             piece.style.left = randX + "px";
             piece.style.top = randY + "px";
 
-            piece.onmousedown = dragMouseDown;
+            piece.addEventListener("mousedown", dragStart);
+            piece.addEventListener("touchstart", dragStart, { passive: false });
+
             board.appendChild(piece);
             pieces.push(piece);
           }
         }
       }
 
-      function dragMouseDown(e) {
+      function dragStart(e) {
         e.preventDefault();
         const piece = this;
-        let shiftX = e.clientX - piece.getBoundingClientRect().left;
-        let shiftY = e.clientY - piece.getBoundingClientRect().top;
+        const isTouch = e.type === "touchstart";
+        const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+        const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
-        function moveAt(pageX, pageY) {
-          piece.style.left = pageX - shiftX - board.offsetLeft + "px";
-          piece.style.top = pageY - shiftY - board.offsetTop + "px";
+        let shiftX = clientX - piece.getBoundingClientRect().left;
+        let shiftY = clientY - piece.getBoundingClientRect().top;
+
+        function moveAt(x, y) {
+          piece.style.left = x - shiftX - board.offsetLeft + "px";
+          piece.style.top = y - shiftY - board.offsetTop + "px";
         }
 
-        function onMouseMove(e) {
-          moveAt(e.pageX, e.pageY);
+        function onMove(e) {
+          const x = isTouch ? e.touches[0].pageX : e.pageX;
+          const y = isTouch ? e.touches[0].pageY : e.pageY;
+          moveAt(x, y);
         }
 
-        document.addEventListener("mousemove", onMouseMove);
-
-        document.onmouseup = function () {
-          document.removeEventListener("mousemove", onMouseMove);
-          document.onmouseup = null;
-
+        function onEnd() {
+          document.removeEventListener(isTouch ? "touchmove" : "mousemove", onMove);
+          document.removeEventListener(isTouch ? "touchend" : "mouseup", onEnd);
           snapToGrid(piece);
           checkIfSolved();
-        };
+        }
+
+        document.addEventListener(isTouch ? "touchmove" : "mousemove", onMove, { passive: false });
+        document.addEventListener(isTouch ? "touchend" : "mouseup", onEnd);
       }
 
       function snapToGrid(piece) {
