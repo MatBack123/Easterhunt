@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>De Kluis</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #fffaf0;
+        color: #333;
+        padding: 40px;
+        max-width: 700px;
+        margin: auto;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 1.6em;
+        color: #8b0000;
+      }
+      .riddle {
+        background-color: #f3e5ab;
+        border-left: 6px solid #daaa00;
+        padding: 20px;
+        margin-top: 20px;
+        font-style: italic;
+        position: relative;
+      }
+      input[type="text"] {
+        padding: 8px;
+        font-size: 1em;
+        width: 80px;
+        text-align: center;
+        margin-top: 10px;
+      }
+      button {
+        background-color: #daaa00;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9em;
+        border-radius: 6px;
+        margin-top: 10px;
+        margin-right: 6px;
+      }
+      button:hover {
+        background-color: #cc9900;
+      }
+      .hint {
+        display: none;
+        background-color: #ffeb99;
+        border: 2px solid #ffcc00;
+        padding: 10px;
+        margin-top: 10px;
+        font-style: italic;
+        color: #333;
+        border-radius: 6px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 20px;
+        border-left: 6px solid #28a745;
+        margin-top: 30px;
+        font-weight: bold;
+        display: none;
+      }
+      .emoji {
+        font-size: 1.4em;
+        vertical-align: middle;
+      }
+      .kluis-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        background-color: #222;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+      }
+      .kluis-digit {
+        width: 40px;
+        height: 60px;
+        font-size: 2em;
+        text-align: center;
+        border: 2px solid #0f0;
+        background-color: black;
+        color: #0f0;
+        margin: 0 5px;
+        border-radius: 5px;
+        box-shadow: inset 0 0 10px #0f0;
+      }
+      .code-display {
+        font-weight: bold;
+        font-size: 1.2em;
+        color: green;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><span class="emoji">🔐</span> De Kluis</h1>
+
+    <p>
+      Los elk raadsel op en krijg een 3-cijferige code. Vul daarna de 9 cijfers
+      in de kluis hieronder in om hem te openen.
+    </p>
+
+    <div class="riddle">
+      <p>
+        <strong>Raadsel 1:</strong><br />
+        Ik ben een getal. Als je mij verdubbelt en er dan 3 bij optelt, krijg je
+        17. Wat ben ik?
+      </p>
+      <input type="text" id="r1" />
+      <button onclick="checkRiddle(1)">Check</button>
+      <button onclick="toggleHint(1)">Hint 🧠</button>
+      <div class="hint" id="hint1">Probeer: 2 × ? + 3 = 17</div>
+      <div class="code-display" id="code1"></div>
+    </div>
+
+    <div class="riddle">
+      <p>
+        <strong>Raadsel 2:</strong><br />
+        Welke getal komt als volgende in deze reeks? 1, 1, 2, 3, 5, ?
+      </p>
+      <input type="text" id="r2" />
+      <button onclick="checkRiddle(2)">Check</button>
+      <button onclick="toggleHint(2)">Hint 🔢</button>
+      <div class="hint" id="hint2">
+        Fibonacci… Elk getal is de som van de twee ervoor.
+      </div>
+      <div class="code-display" id="code2"></div>
+    </div>
+
+    <div class="riddle">
+      <p>
+        <strong>Raadsel 3:</strong><br />
+        Je hebt één lucifer. Je komt een donkere kamer binnen met: een kaars,
+        een olielamp en een kachel. Wat steek je eerst aan?
+      </p>
+      <input type="text" id="r3" />
+      <button onclick="checkRiddle(3)">Check</button>
+      <button onclick="toggleHint(3)">Hint 🔥</button>
+      <div class="hint" id="hint3">
+        Je kunt niets aansteken zonder dit als eerste te doen.
+      </div>
+      <div class="code-display" id="code3"></div>
+    </div>
+
+    <h2 style="margin-top: 40px">💡 Vul de 3 gevonden codes in de kluis:</h2>
+    <div class="kluis-container">
+      <input class="kluis-digit" id="k1" maxlength="1" />
+      <input class="kluis-digit" id="k2" maxlength="1" />
+      <input class="kluis-digit" id="k3" maxlength="1" />
+      <input class="kluis-digit" id="k4" maxlength="1" />
+      <input class="kluis-digit" id="k5" maxlength="1" />
+      <input class="kluis-digit" id="k6" maxlength="1" />
+      <input class="kluis-digit" id="k7" maxlength="1" />
+      <input class="kluis-digit" id="k8" maxlength="1" />
+      <input class="kluis-digit" id="k9" maxlength="1" />
+    </div>
+
+    <button onclick="unlock()">🧠 Ontgrendel de kluis</button>
+
+    <div class="success" id="successMessage">
+      🥳 Fantastisch! De code was correct.<br />
+      <strong>De volgende aanwijzing is:</strong><br />
+      📍 Kijk in de oven... maar wees voorzichtig! 🔥
+    </div>
+
+    <script>
+      const correctAnswers = {
+        1: { answer: "7", code: "017" },
+        2: { answer: "8", code: "138" },
+        3: { answer: "lucifer", code: "021" },
+      };
+
+      const foundCodes = {
+        1: null,
+        2: null,
+        3: null,
+      };
+
+      function checkRiddle(nr) {
+        const input = document
+          .getElementById(`r${nr}`)
+          .value.trim()
+          .toLowerCase();
+        const correct = correctAnswers[nr].answer;
+        const display = document.getElementById(`code${nr}`);
+
+        if (input === correct) {
+          foundCodes[nr] = correctAnswers[nr].code;
+          display.innerText = `✅ Code: ${foundCodes[nr]}`;
+        } else {
+          display.innerText = `❌ Dat is niet juist.`;
+        }
+      }
+
+      function toggleHint(nr) {
+        const hint = document.getElementById(`hint${nr}`);
+        hint.style.display = hint.style.display === "block" ? "none" : "block";
+      }
+
+      function unlock() {
+        const enteredCode =
+          document.getElementById("k1").value +
+          document.getElementById("k2").value +
+          document.getElementById("k3").value +
+          document.getElementById("k4").value +
+          document.getElementById("k5").value +
+          document.getElementById("k6").value +
+          document.getElementById("k7").value +
+          document.getElementById("k8").value +
+          document.getElementById("k9").value;
+
+        const correctCode =
+          (foundCodes[1] || "") + (foundCodes[2] || "") + (foundCodes[3] || "");
+
+        if (enteredCode === correctCode && correctCode.length === 9) {
+          document.getElementById("successMessage").style.display = "block";
+        } else {
+          alert(
+            "❌ De kluis blijft dicht. Controleer je invoer en of je alle raadsels goed hebt!"
+          );
+        }
+      }
+    </script>
+  </body>
+</html>

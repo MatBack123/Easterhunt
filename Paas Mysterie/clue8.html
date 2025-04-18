@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clue 9 – Quiz van Schaduwpoot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Raleway", sans-serif;
+        background-color: #f0f8f4;
+        color: #2c2c2c;
+      }
+
+      header {
+        background-color: #43a047;
+        color: white;
+        padding: 3rem 1rem;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        border-bottom: 5px solid #388e3c;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin: 0;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .emoji {
+        font-size: 1.5rem;
+        vertical-align: middle;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 2rem 1rem;
+      }
+
+      .question {
+        background-color: #fff9c4;
+        border-left: 6px solid #43a047;
+        border-radius: 8px;
+        padding: 20px 25px;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        font-style: italic;
+      }
+
+      .options button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.8rem 1rem;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        background-color: white;
+        border: 2px solid #43a047;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .options button:hover {
+        background-color: #c8e6c9;
+      }
+
+      .options button.correct {
+        background-color: #a5d6a7;
+        border-color: #2e7d32;
+        color: #2e7d32;
+      }
+
+      .options button.incorrect {
+        background-color: #ffcdd2;
+        border-color: #c62828;
+        color: #c62828;
+      }
+
+      .hint {
+        display: none;
+        background-color: #f9fbe7;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 30px;
+        font-style: italic;
+        border-left: 6px solid #43a047;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        color: #777;
+        font-size: 0.9rem;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <span class="emoji">🧠</span> Clue 9 – Quiz van Schaduwpoot
+        <span class="emoji">❓</span>
+      </h1>
+    </header>
+
+    <div class="container">
+      <p>
+        Beantwoord deze drie vragen goed... of loop in de val van de
+        Schaduwpoot!
+      </p>
+
+      <div class="question" id="q1">
+        <p>
+          <strong>Vraag 1:</strong> Waar vond Jesse de hint onder de glijbaan?
+        </p>
+        <div class="options">
+          <button onclick="checkAnswer(this, 'q1', false)">In de schuur</button>
+          <button onclick="checkAnswer(this, 'q1', true)">
+            Na het oplossen van de legpuzzel
+          </button>
+          <button onclick="checkAnswer(this, 'q1', false)">
+            Bij het fornuis
+          </button>
+        </div>
+      </div>
+
+      <div class="question" id="q2">
+        <p>
+          <strong>Vraag 2:</strong> Hoeveel verschillen moest Jesse vinden in
+          Clue 4?
+        </p>
+        <div class="options">
+          <button onclick="checkAnswer(this, 'q2', false)">8</button>
+          <button onclick="checkAnswer(this, 'q2', true)">10</button>
+          <button onclick="checkAnswer(this, 'q2', false)">12</button>
+        </div>
+      </div>
+
+      <div class="question" id="q3">
+        <p>
+          <strong>Vraag 3:</strong> Wat was de oplossing van het raadsel over de
+          lucifer?
+        </p>
+        <div class="options">
+          <button onclick="checkAnswer(this, 'q3', true)">
+            De lucifer zelf
+          </button>
+          <button onclick="checkAnswer(this, 'q3', false)">De kaars</button>
+          <button onclick="checkAnswer(this, 'q3', false)">De olielamp</button>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">
+        ✅ Indrukwekkend, Jesse!<br />
+        De Schaduwpoot is onder de indruk...<br />
+        <strong>Kijk achter het schilderij in de gang 🎨🕵️‍♂️</strong>
+      </div>
+    </div>
+
+    <footer>
+      <span class="emoji">🐣</span> Kun jij Schaduwpoot blijven voorblijven...?
+    </footer>
+
+    <script>
+      const answered = { q1: false, q2: false, q3: false };
+      let correctCount = 0;
+
+      function checkAnswer(button, qid, correct) {
+        if (answered[qid]) return;
+
+        answered[qid] = true;
+
+        const buttons = document.querySelectorAll(`#${qid} .options button`);
+        buttons.forEach((btn) => (btn.disabled = true));
+
+        if (correct) {
+          button.classList.add("correct");
+          correctCount++;
+        } else {
+          button.classList.add("incorrect");
+        }
+
+        if (correctCount === 3) {
+          document.getElementById("hint").style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>

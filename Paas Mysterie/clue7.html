@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Clue 7 – Volgorde Puzzel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Raleway", sans-serif;
+        background-color: #f0f8f4;
+        color: #2c2c2c;
+      }
+
+      header {
+        background-color: #43a047;
+        color: white;
+        padding: 3rem 1rem;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        border-bottom: 5px solid #388e3c;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin: 0;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .emoji {
+        font-size: 1.5rem;
+        vertical-align: middle;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 2rem 1rem;
+      }
+
+      .instruction {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .drag-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .drag-item {
+        background-color: #fff9c4;
+        border-left: 6px solid #43a047;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        font-style: italic;
+        cursor: grab;
+      }
+
+      .drag-item.dragging {
+        opacity: 0.5;
+      }
+
+      .hint {
+        display: none;
+        background-color: #f9fbe7;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-style: italic;
+        font-size: 1rem;
+        border-left: 6px solid #43a047;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        color: #777;
+        font-size: 0.9rem;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <span class="emoji">🧩</span> Clue 7 – Wat komt eerst?
+        <span class="emoji">📋</span>
+      </h1>
+    </header>
+
+    <div class="container">
+      <p class="instruction">
+        Schaduwpoot heeft een reeks stappen door elkaar gehusseld. Zet ze in de
+        juiste volgorde!
+      </p>
+
+      <ul class="drag-list" id="list">
+        <li class="drag-item" draggable="true">Tandenpoetsen 🪥</li>
+        <li class="drag-item" draggable="true">Opstaan ⏰</li>
+        <li class="drag-item" draggable="true">Aankleden 👕</li>
+        <li class="drag-item" draggable="true">Ontbijten 🥣</li>
+        <li class="drag-item" draggable="true">Naar buiten 🚪</li>
+      </ul>
+
+      <div class="hint" id="hint">
+        ✅ Goed gedaan, Jesse!<br />
+        De volgende aanwijzing is:<br />
+        <strong>Check de la waar je je sokken bewaart 🧦</strong>
+      </div>
+    </div>
+
+    <footer>
+      <span class="emoji">🐣</span> Kun jij het volgende paasei vinden...?
+    </footer>
+
+    <script>
+      const list = document.getElementById("list");
+      const hint = document.getElementById("hint");
+
+      const correctOrder = [
+        "Opstaan ⏰",
+        "Ontbijten 🥣",
+        "Tandenpoetsen 🪥",
+        "Aankleden 👕",
+        "Naar buiten 🚪",
+      ];
+
+      let draggedItem = null;
+
+      list.addEventListener("dragstart", function (e) {
+        if (e.target.classList.contains("drag-item")) {
+          draggedItem = e.target;
+          e.target.classList.add("dragging");
+        }
+      });
+
+      list.addEventListener("dragend", function (e) {
+        if (e.target.classList.contains("drag-item")) {
+          e.target.classList.remove("dragging");
+        }
+      });
+
+      list.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(list, e.clientY);
+        if (afterElement == null) {
+          list.appendChild(draggedItem);
+        } else {
+          list.insertBefore(draggedItem, afterElement);
+        }
+        checkOrder();
+      });
+
+      function getDragAfterElement(container, y) {
+        const draggableElements = [
+          ...container.querySelectorAll(".drag-item:not(.dragging)"),
+        ];
+
+        return draggableElements.reduce(
+          (closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+              return { offset: offset, element: child };
+            } else {
+              return closest;
+            }
+          },
+          { offset: Number.NEGATIVE_INFINITY }
+        ).element;
+      }
+
+      function checkOrder() {
+        const items = [...list.querySelectorAll(".drag-item")].map((item) =>
+          item.textContent.trim()
+        );
+        const correct = items.every((item, i) => item === correctOrder[i]);
+        if (correct) {
+          hint.style.display = "block";
+        } else {
+          hint.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
